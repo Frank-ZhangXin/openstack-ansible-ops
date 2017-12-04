@@ -50,7 +50,9 @@ if [[ -n ${PRE_SETUP_HOSTS_HOOK+x} ]]; then
 fi
 
 # Setup Hosts
-RUN_TASKS+=("openstack-hosts-setup.yml -e redeploy_rerun=true")
+if [ ! -f /etc/openstack_deploy/upgrade-leap/openstack-hosts-setup.yml-e-redeploy_rerun-true.complete ]; then
+  RUN_TASKS+=("openstack-hosts-setup.yml -e redeploy_rerun=true")
+fi
 
 # Run the security-hardening playbook in redeployment
 RUN_TASKS+=("security-hardening.yml")
@@ -79,16 +81,18 @@ if [[ -n ${PRE_SETUP_INFRASTRUCTURE_HOOK+x} ]]; then
 fi
 
 # Setup Infrastructure
-RUN_TASKS+=("unbound-install.yml")
-RUN_TASKS+=("repo-install.yml")
-RUN_TASKS+=("${UPGRADE_UTILS}/haproxy-cleanup.yml")
-RUN_TASKS+=("haproxy-install.yml")
-RUN_TASKS+=("memcached-install.yml")
-RUN_TASKS+=("galera-install.yml")
-RUN_TASKS+=("rabbitmq-install.yml")
-RUN_TASKS+=("etcd-install.yml")
-RUN_TASKS+=("utility-install.yml")
-RUN_TASKS+=("rsyslog-install.yml")
+if [ ! -f /etc/openstack_deploy/upgrade-leap/rsyslog-install.yml.complete ]; then
+  RUN_TASKS+=("unbound-install.yml")
+  RUN_TASKS+=("repo-install.yml")
+  RUN_TASKS+=("${UPGRADE_UTILS}/haproxy-cleanup.yml")
+  RUN_TASKS+=("haproxy-install.yml")
+  RUN_TASKS+=("memcached-install.yml")
+  RUN_TASKS+=("galera-install.yml")
+  RUN_TASKS+=("rabbitmq-install.yml")
+  RUN_TASKS+=("etcd-install.yml")
+  RUN_TASKS+=("utility-install.yml")
+  RUN_TASKS+=("rsyslog-install.yml")
+fi
 
 # MariaDB sync for major maria upgrades and cluster schema sync
 RUN_TASKS+=("${UPGRADE_UTILS}/db-force-upgrade.yml")
